@@ -111,6 +111,10 @@ var filteredActivities = allActivities.filter(activity => {
   return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
 })
 
+function sortIntoActivities(allActivities){
+  return
+}
+
 console.log(allActivities);
 console.log(filteredActivities);
 
