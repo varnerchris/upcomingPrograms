@@ -80,6 +80,11 @@ function XMLtoJSON() {
   }
 };
 
+// creates object instantce of XMLtoJSON
+var xml2json = new XMLtoJSON();
+var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.varnerchris.com/wp-content/uploads/ftp/test.xml');
+
+
 //filter out our passed start dates
 
 function sortStartDates(jsonObject){
@@ -94,12 +99,22 @@ function sortStartDates(jsonObject){
 }
 return programResults;
 }
-
-
-// creates object instantce of XMLtoJSON
-var xml2json = new XMLtoJSON();
-var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.varnerchris.com/wp-content/uploads/ftp/test.xml');
 var allActivities = sortStartDates(objson);
+
+
+function sortIntoActivities(list){
+  //console.log(list.ttReport.ttReportRow.length);
+  var programActivityArr = [];
+  for(var i=0; i<list.length; i++){
+    if(list[i].hasOwnProperty('arsection_activitycode') && programActivityArr.indexOf(list[i]['#text'] === -1)){
+      programActivityArr.push(list[i].arsection_activitycode['#text'])
+    }
+  }
+  return programActivityArr
+}
+var activityArr = sortIntoActivities(allActivities);
+
+console.log(activityArr);
 
 /*
  <script type="text/javascript">
@@ -109,14 +124,7 @@ var allActivities = sortStartDates(objson);
 
 var filteredActivities = allActivities.filter(activity => {
   return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
-})
-
-function sortIntoActivities(allActivities){
-  return
-}
-
-console.log(allActivities);
-console.log(filteredActivities);
+});
 
 (function($) {
   $(document).ready(function(){
@@ -129,20 +137,9 @@ console.log(filteredActivities);
 
     $itemDescription.text(activity.arsection_brochuretext['#text']);
     $itemHeader.text(activity.aractivity_shortdescription['#text'] );
-    $itemDate.text(activity.arsection_daterange['#text']);
+    //$itemDate.text(activity.arsection_daterange['#text']);
     $item.append($itemHeader, $itemDate, $itemDescription)
     return $item;
   }));
 });
 })(jQuery)
-
-//(function($) {
-//  $(document).ready(function(){
-//  var $container = $('div#hockey-activities');
-//    $container.append(filteredActivities.map(activity => {
-//    let $elem = $('<div />');
-//    $elem.text(activity.aractivity_shortdescription['#text'] );
-//    return $elem;
-//  }));
-//});
-//})(jQuery)
