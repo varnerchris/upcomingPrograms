@@ -100,7 +100,7 @@ function sortStartDates(jsonObject){
 return programResults;
 }
 var allActivities = sortStartDates(objson);
-
+console.log(allActivities);
 
 function sortIntoActivities(list){
   //console.log(list.ttReport.ttReportRow.length);
@@ -113,7 +113,6 @@ function sortIntoActivities(list){
   return programActivityArr
 }
 var activityArr = sortIntoActivities(allActivities);
-
 console.log(activityArr);
 
 /*
