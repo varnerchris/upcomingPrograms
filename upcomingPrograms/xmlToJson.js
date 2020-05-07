@@ -132,13 +132,42 @@ var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesLi
 
 //Return all sections for each activity
 function sortIntoSections(uniqueActivityList, fullList){
-  for(var i=0; i<uniqueActivityList.length; i++){
-    const result = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
-        console.log(result)
-  }
-};
+  (function($) {
+    $(document).ready(function(){
 
-var sections = sortIntoSections(uniqueActivityCodesList, allActivities);
+    var $container = $('div#upcoming-activities');
+
+    for(var i=0; i<uniqueActivityList.length; i++){
+      const result = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
+      console.log(result);
+
+          var $item = $('<div  />');
+          var $itemHeader = $('<h2 />')
+          var $itemDescription = $('<p />')
+          //console.log(result.aractivity_shortdescription['#text']);
+
+          $itemHeader.text(result[0].aractivity_shortdescription['#text'] );
+          $itemDescription.text(result[0].arsection_brochuretext['#text'] );
+
+          $item.append($itemHeader, $itemDescription)
+
+          $item.append(result.map(section => {
+          var $itemBeginDate = $('<p />');
+          var $itemEndDate = $('<p />');
+          $itemBeginDate.text(section.arsection_begindate['#text']);
+          $itemEndDate.text(section.arsection_enddate['#text']);
+          //$itemDate.text(activity.arsection_daterange['#text']);
+          //$item.append($itemBeginDate, $itemEndDate)
+        }));
+    return $item;
+    }
+    $container.append($item);
+  });
+})(jQuery)
+}
+
+
+sortIntoSections(uniqueActivityCodesList, allActivities);
 
 
 
@@ -153,21 +182,3 @@ var sections = sortIntoSections(uniqueActivityCodesList, allActivities);
 var filteredActivities = uniqueActivities.filter(activity => {
   return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
 });
-
-(function($) {
-  $(document).ready(function(){
-  var $container = $('div#upcoming-activities');
-    $container.append(filteredActivities.map(activity => {
-    var $item = $('<div  />');
-    var $itemHeader = $('<h2 />');
-    //var $itemDate = $('<h3 >')
-    var $itemDescription = $('<p />');
-
-    $itemDescription.text(activity.arsection_brochuretext['#text']);
-    $itemHeader.text(activity.aractivity_shortdescription['#text'] );
-    //$itemDate.text(activity.arsection_daterange['#text']);
-    $item.append($itemHeader, $itemDescription)
-    return $item;
-  }));
-});
-})(jQuery)
