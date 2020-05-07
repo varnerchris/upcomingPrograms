@@ -102,18 +102,45 @@ return programResults;
 var allActivities = sortStartDates(objson);
 console.log(allActivities);
 
-function sortIntoActivities(list){
-  //console.log(list.ttReport.ttReportRow.length);
+function uniqueActivityFinder(list){
   var programActivityArr = [];
   for(var i=0; i<list.length; i++){
-    if(list[i].hasOwnProperty('arsection_activitycode') && programActivityArr.indexOf(list[i]['#text'] === -1)){
-      programActivityArr.push(list[i].arsection_activitycode['#text'])
+    var text =  list[i].hasOwnProperty('arsection_activitycode') ?  list[i].arsection_activitycode['#text'] : null
+    if (text && programActivityArr.indexOf(text) === -1) {
+        programActivityArr.push(text)
     }
   }
   return programActivityArr
 }
-var activityArr = sortIntoActivities(allActivities);
-console.log(activityArr);
+var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
+console.log(uniqueActivityCodesList);
+
+
+function returnJustOneActivity(fullList,uniques){
+var uniqueActivityArr = [];
+for(var i=0; i<uniques.length; i++){
+  var uniqueActivity = fullList.find(activity => activity.arsection_activitycode['#text'] === uniques[i]);
+  uniqueActivityArr.push(uniqueActivity)
+  }
+  return uniqueActivityArr
+}
+
+var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
+//console.log(returnJustOneActivity(allActivities,uniqueActivityCodesList));
+
+function sortIntoSections(uniqueActivityList, fullList){
+  for(var i=0; i<fullList.length; i++){
+    for(var j=0; j<uniqueActivityList.length; j++){
+        //console.log(i,j)
+    }
+  }
+};
+
+var sections = sortIntoSections(uniqueActivityCodesList, allActivities);
+
+
+
+
 
 /*
  <script type="text/javascript">
@@ -121,7 +148,7 @@ console.log(activityArr);
  </script>
 */
 
-var filteredActivities = allActivities.filter(activity => {
+var filteredActivities = uniqueActivities.filter(activity => {
   return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
 });
 
@@ -137,7 +164,7 @@ var filteredActivities = allActivities.filter(activity => {
     $itemDescription.text(activity.arsection_brochuretext['#text']);
     $itemHeader.text(activity.aractivity_shortdescription['#text'] );
     //$itemDate.text(activity.arsection_daterange['#text']);
-    $item.append($itemHeader, $itemDate, $itemDescription)
+    $item.append($itemHeader, $itemDescription)
     return $item;
   }));
 });
