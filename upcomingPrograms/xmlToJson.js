@@ -102,6 +102,7 @@ return programResults;
 var allActivities = sortStartDates(objson);
 console.log(allActivities);
 
+//Create a list of Active Activity Numbers
 function uniqueActivityFinder(list){
   var programActivityArr = [];
   for(var i=0; i<list.length; i++){
@@ -115,7 +116,7 @@ function uniqueActivityFinder(list){
 var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
 console.log(uniqueActivityCodesList);
 
-
+//Use the list of Active Activity Numbers to Return just one Class
 function returnJustOneActivity(fullList,uniques){
 var uniqueActivityArr = [];
 for(var i=0; i<uniques.length; i++){
@@ -128,11 +129,12 @@ for(var i=0; i<uniques.length; i++){
 var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
 //console.log(returnJustOneActivity(allActivities,uniqueActivityCodesList));
 
+
+//Return all sections for each activity
 function sortIntoSections(uniqueActivityList, fullList){
-  for(var i=0; i<fullList.length; i++){
-    for(var j=0; j<uniqueActivityList.length; j++){
-        //console.log(i,j)
-    }
+  for(var i=0; i<uniqueActivityList.length; i++){
+    const result = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
+        console.log(result)
   }
 };
 
@@ -158,7 +160,7 @@ var filteredActivities = uniqueActivities.filter(activity => {
     $container.append(filteredActivities.map(activity => {
     var $item = $('<div  />');
     var $itemHeader = $('<h2 />');
-    var $itemDate = $('<h3 >')
+    //var $itemDate = $('<h3 >')
     var $itemDescription = $('<p />');
 
     $itemDescription.text(activity.arsection_brochuretext['#text']);
