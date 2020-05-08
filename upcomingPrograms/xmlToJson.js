@@ -1,6 +1,14 @@
+(function(){
+  $(document).ready(function(){
+    var $container = $('div#upcoming-activities');
+
+    // something else on load?
+    sortIntoSections($container, ? , ?);
+  });
+
+
 // Converts XML to JSON
 // from: https://coursesweb.net/javascript/convert-xml-json-javascript_s2
-
 function XMLtoJSON() {
   var me = this;      // stores the object instantce
   //console.log("XmlToJson Loaded")
@@ -80,13 +88,7 @@ function XMLtoJSON() {
   }
 };
 
-// creates object instantce of XMLtoJSON
-var xml2json = new XMLtoJSON();
-var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.varnerchris.com/wp-content/uploads/ftp/test.xml');
-
-
-//filter out our passed start dates
-
+//filter out past start dates
 function sortStartDates(jsonObject){
   var programResults = [];
   let todayMoment = moment().format("YYYY-MM-DD");
@@ -99,8 +101,6 @@ function sortStartDates(jsonObject){
 }
 return programResults;
 }
-var allActivities = sortStartDates(objson);
-console.log(allActivities);
 
 //Create a list of Active Activity Numbers
 function uniqueActivityFinder(list){
@@ -113,8 +113,6 @@ function uniqueActivityFinder(list){
   }
   return programActivityArr
 }
-var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
-console.log(uniqueActivityCodesList);
 
 //Use the list of Active Activity Numbers to Return just one Class
 function returnJustOneActivity(fullList,uniques){
@@ -126,52 +124,54 @@ for(var i=0; i<uniques.length; i++){
   return uniqueActivityArr
 }
 
-var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
-//console.log(returnJustOneActivity(allActivities,uniqueActivityCodesList));
-
-
 //Return all sections for each activity
-function sortIntoSections(uniqueActivityList, fullList){
-  (function($) {
-    $(document).ready(function(){
-
-    var $container = $('div#upcoming-activities');
-
+function sortIntoSections($container, uniqueActivityList, fullList){
+    $container.empty();
     for(var i=0; i<uniqueActivityList.length; i++){
-      const result = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
-      console.log(result);
+      const results = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
+      var $item = $('<div  />');
+      var $itemHeader = $('<h2 />');
+      var $itemDescription = $('<p />');
 
-          var $item = $('<div  />');
-          var $itemHeader = $('<h2 />')
-          var $itemDescription = $('<p />')
-          //console.log(result.aractivity_shortdescription['#text']);
+      $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
+      $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
-          $itemHeader.text(result[0].aractivity_shortdescription['#text'] );
-          $itemDescription.text(result[0].arsection_brochuretext['#text'] );
+      $item.append($itemHeader, $itemDescription)
 
-          $item.append($itemHeader, $itemDescription)
+      $item.append(results.map(section => {
+        var $itemBeginDate = $('<p />');
+        var $itemEndDate = $('<p />');
+        $itemBeginDate.text(section.arsection_begindate['#text']);
+        $itemEndDate.text(section.arsection_enddate['#text']);
+        //$itemDate.text(activity.arsection_daterange['#text']);
+        //$item.append($itemBeginDate, $itemEndDate)
+      }));
 
-          $item.append(result.map(section => {
-          var $itemBeginDate = $('<p />');
-          var $itemEndDate = $('<p />');
-          $itemBeginDate.text(section.arsection_begindate['#text']);
-          $itemEndDate.text(section.arsection_enddate['#text']);
-          //$itemDate.text(activity.arsection_daterange['#text']);
-          //$item.append($itemBeginDate, $itemEndDate)
-        }));
-    return $item;
+      $container.append($item)
     }
-    $container.append($item);
-  });
-})(jQuery)
-}
+  }
 
 
 sortIntoSections(uniqueActivityCodesList, allActivities);
 
+// creates object instantce of XMLtoJSON
+var xml2json = new XMLtoJSON();
+var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.varnerchris.com/wp-content/uploads/ftp/test.xml');
+
+//allActivities returns ALL programs/sections not started
+var allActivities = sortStartDates(objson);
+
+//uniqueActivityCodesList returns a list of unique Activity codes
+var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
+
+//uniqueActivities returns just ONE of each Activity/Section
+var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
 
 
 
+var filteredActivities = uniqueActivities.filter(activity => {
+  return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
+});
 
 /*
  <script type="text/javascript">
@@ -179,6 +179,4 @@ sortIntoSections(uniqueActivityCodesList, allActivities);
  </script>
 */
 
-var filteredActivities = uniqueActivities.filter(activity => {
-  return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
-});
+})(jQuery)
