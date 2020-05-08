@@ -132,20 +132,26 @@ function sortIntoSections($container, uniqueActivityList, fullList){
       var $itemHeader = $('<h2 />');
       var $itemDescription = $('<p />');
 
+      var $itemBeginDate = $('<p />');
+      var $itemEndDate = $('<p />');
+      $itemBeginDate.text(section.arsection_begindate['#text']);
+      $itemEndDate.text(section.arsection_enddate['#text']);
+
       $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
-      $item.append($itemHeader, $itemDescription)
-      console.log(results);
+      $item.append($itemHeader, $itemDescription,$itemBeginDate,$itemEndDate)
+      //console.log(results);
 
       $item.append(results.map(section => {
         var $itemBeginDate = $('<p />');
         var $itemEndDate = $('<p />');
         $itemBeginDate.text(section.arsection_begindate['#text']);
         $itemEndDate.text(section.arsection_enddate['#text']);
-        console.log(section.arsection_begindate['#text'])
+        //console.log(section.arsection_begindate['#text'])
         //$itemDate.text(activity.arsection_daterange['#text']);
         //$item.append($itemBeginDate, $itemEndDate)
+
       }));
 
       $container.append($item)
