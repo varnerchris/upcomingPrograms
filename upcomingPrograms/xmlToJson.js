@@ -131,27 +131,40 @@ function sortIntoSections($container, uniqueActivityList, fullList){
       var $item = $('<div  />');
       var $itemHeader = $('<h2 />');
       var $itemDescription = $('<p />');
-
-      var $itemBeginDate = $('<p />');
-      var $itemEndDate = $('<p />');
-      $itemBeginDate.text(section.arsection_begindate['#text']);
-      $itemEndDate.text(section.arsection_enddate['#text']);
+      var $table = $('<table class="sections" />')
 
       $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
-      $item.append($itemHeader, $itemDescription,$itemBeginDate,$itemEndDate)
-      //console.log(results);
 
-      $item.append(results.map(section => {
-        var $itemBeginDate = $('<p />');
-        var $itemEndDate = $('<p />');
-        $itemBeginDate.text(section.arsection_begindate['#text']);
-        $itemEndDate.text(section.arsection_enddate['#text']);
+
+      $item.append($itemHeader, $itemDescription, $table )
+      console.log(results);
+
+      $table.append(results.map(section => {
+        var $row = $('<tr class="sectionsRow" />');
+        var $sectionBeginDate = $('<td class="beginDate" />');
+        var $sectionEndDate = $('<td class="endDate" />');
+        var $sectionBeginTime =$('<td class="startTime />"');
+        var $sectionEndTime = $('<td class="endTime" />');
+        var $sectionMeetingDays = $('<td class = "meetingDays" />');
+        var $sectionFee = $('<td class="sectionFee" />');
+        var $sectionRegistrationLink = $('<td class="sectionLink" />');
+
+        //arsection_meetingdays, arsection_begintime, arsection_endtime
+        //arsection_itemtotalprice,arsection_combokey
+
+        $sectionBeginDate.text(section.arsection_begindate['#text']);
+        $sectionEndDate.text(section.arsection_enddate['#text']);
+        $sectionBeginTime.text(section.arsection_begintime['#text']);
+        $sectionEndTime.text(section.arsection_endtime['#text']);
+        $sectionMeetingDays.text(section.arsection_meetingdays['#text']);
+        $sectionFee.text(section.arsection_itemtotalprice['#text']);
+        $sectionRegistrationLink.text(section.arsection_combokey['#text']);
+
+        $row.append($sectionBeginDate, $sectionEndDate, $sectionBeginTime, $sectionEndTime, $sectionMeetingDays,$sectionFee, $sectionRegistrationLink)
         //console.log(section.arsection_begindate['#text'])
-        //$itemDate.text(activity.arsection_daterange['#text']);
-        //$item.append($itemBeginDate, $itemEndDate)
-
+        return($row)
       }));
 
       $container.append($item)
@@ -171,8 +184,6 @@ var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
 //uniqueActivities returns just ONE of each Activity/Section
 var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
 
-
-
 var filteredActivities = uniqueActivities.filter(activity => {
   return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
 });
@@ -182,5 +193,9 @@ var filteredActivities = uniqueActivities.filter(activity => {
  window.__ACTIVITY_FILTER = "IHOCK"
  </script>
 */
+
+var filteredActivities = uniqueActivities.filter(activity => {
+  return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
+});
 
 })(jQuery)
