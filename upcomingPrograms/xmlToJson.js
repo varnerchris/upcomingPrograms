@@ -2,7 +2,7 @@
   $(document).ready(function(){
     var $container = $('div#upcoming-activities');
     // something else on load?
-    sortIntoSections($container, uniqueActivityCodesList , allActivities);
+    sortIntoSections($container, uniqueActivityCodesList, filteredActivities);
   });
 
 
@@ -113,6 +113,17 @@ function uniqueActivityFinder(list){
   return programActivityArr
 }
 
+function uniqueSectionFinder(list){
+  var sectionActivityArr = [];
+  for(var i=0; i<list.length; i++){
+    var text =  list[i].hasOwnProperty('arsection_combokey') ?  list[i].arsection_combokey['#text'] : null
+    if (text && sectionActivityArr.indexOf(text) === -1) {
+        sectionActivityArr.push(text)
+    }
+  }
+  return sectionActivityArr
+}
+
 //Use the list of Active Activity Numbers to Return just one Class
 function returnJustOneActivity(fullList,uniques){
 var uniqueActivityArr = [];
@@ -121,6 +132,16 @@ for(var i=0; i<uniques.length; i++){
   uniqueActivityArr.push(uniqueActivity)
   }
   return uniqueActivityArr
+}
+
+//Get Rid of the Duplicate Sections
+function returnUniqueSections(fullList,uniqueSectionList){
+var uniqueSectionArr = [];
+for(var i=0; i<uniqueSectionList.length; i++){
+  var uniqueSection = fullList.find(section => section.arsection_combokey['#text'] === uniqueSectionList[i]);
+  uniqueSectionArr.push(uniqueSection)
+  }
+  return uniqueSectionArr
 }
 
 //Return all sections for each activity
@@ -136,10 +157,7 @@ function sortIntoSections($container, uniqueActivityList, fullList){
       $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
-
-
       $item.append($itemHeader, $itemDescription, $table )
-      console.log(results);
 
       $table.append(results.map(section => {
         var $row = $('<tr class="sectionsRow" />');
@@ -181,10 +199,15 @@ var allActivities = sortStartDates(objson);
 //uniqueActivityCodesList returns a list of unique Activity codes
 var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
 
+//uniqueSectionList returns a list of unique Section Codes
+var uniqueSectionList = uniqueSectionFinder(allActivities);
+
 //uniqueActivities returns just ONE of each Activity/Section
 var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
 
-var filteredActivities = uniqueActivities.filter(activity => {
+var uniqueSections = returnUniqueSections(allActivities, uniqueSectionList)
+
+var filteredActivities = uniqueSections.filter(activity => {
   return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
 });
 
@@ -194,8 +217,5 @@ var filteredActivities = uniqueActivities.filter(activity => {
  </script>
 */
 
-var filteredActivities = uniqueActivities.filter(activity => {
-  return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
-});
 
 })(jQuery)
