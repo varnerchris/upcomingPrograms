@@ -1,9 +1,8 @@
-(function(){
+(function($){
   $(document).ready(function(){
     var $container = $('div#upcoming-activities');
-
     // something else on load?
-    sortIntoSections($container, ? , ?);
+    sortIntoSections($container, uniqueActivityCodesList , allActivities);
   });
 
 
@@ -137,12 +136,14 @@ function sortIntoSections($container, uniqueActivityList, fullList){
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
       $item.append($itemHeader, $itemDescription)
+      console.log(results);
 
       $item.append(results.map(section => {
         var $itemBeginDate = $('<p />');
         var $itemEndDate = $('<p />');
         $itemBeginDate.text(section.arsection_begindate['#text']);
         $itemEndDate.text(section.arsection_enddate['#text']);
+        console.log(section.arsection_begindate['#text'])
         //$itemDate.text(activity.arsection_daterange['#text']);
         //$item.append($itemBeginDate, $itemEndDate)
       }));
@@ -150,9 +151,6 @@ function sortIntoSections($container, uniqueActivityList, fullList){
       $container.append($item)
     }
   }
-
-
-sortIntoSections(uniqueActivityCodesList, allActivities);
 
 // creates object instantce of XMLtoJSON
 var xml2json = new XMLtoJSON();
