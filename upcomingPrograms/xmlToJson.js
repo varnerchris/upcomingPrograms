@@ -10,7 +10,6 @@
 // from: https://coursesweb.net/javascript/convert-xml-json-javascript_s2
 function XMLtoJSON() {
   var me = this;      // stores the object instantce
-  //console.log("XmlToJson Loaded")
   // gets the content of an xml file and returns it in
   me.fromFile = function(xml, rstr) {
     // Cretes a instantce of XMLHttpRequest object
@@ -91,7 +90,6 @@ function XMLtoJSON() {
 function sortStartDates(jsonObject){
   var programResults = [];
   let todayMoment = moment().format("YYYY-MM-DD");
-  //console.log(jsonObject.ttReport.ttReportRow[3].arsection_begindate['#text'])
   for(let i=0; i<jsonObject.ttReport.ttReportRow.length; i++){
     let beginDate = new moment(jsonObject.ttReport.ttReportRow[i].arsection_begindate['#text']).format("YYYY-MM-DD")
     if(beginDate>todayMoment){
@@ -147,25 +145,26 @@ for(var i=0; i<uniqueSectionList.length; i++){
 //Return all sections for each activity
 function sortIntoSections($container, uniqueActivityList, fullList){
     $container.empty();
-    console.log(fullList)
-    console.log(uniqueActivityList);
     for(var i=0; i<uniqueActivityList.length; i++){
       const results = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
       var $item = $('<div  />');
       var $itemHeader = $('<h2 />');
       var $itemDescription = $('<p />');
-      var $table = $('<table class="sections" />')
-      console.log(results)
+      var $table = $('<table class="sections layout display responsive-table" />');
+      var $tableHead = $('<thead> <tr> <th>Activity Section</th><th>Start Date</th><th>End Date</th><th>Start Time</th><th>End Time</th><th>Meeting Days</th><th>Fee</th><th>Register</th></thead>');
       $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
+
+      $table.append($tableHead)
       $item.append($itemHeader, $itemDescription, $table )
 
       $table.append(results.map(section => {
         var $row = $('<tr class="sectionsRow" />');
+        var $activitySection = $('<td class="activitySection" />')
         var $sectionBeginDate = $('<td class="beginDate" />');
         var $sectionEndDate = $('<td class="endDate" />');
-        var $sectionBeginTime =$('<td class="startTime />"');
+        var $sectionBeginTime =$('<td class="startTime" />');
         var $sectionEndTime = $('<td class="endTime" />');
         var $sectionMeetingDays = $('<td class = "meetingDays" />');
         var $sectionFee = $('<td class="sectionFee" />');
@@ -174,16 +173,16 @@ function sortIntoSections($container, uniqueActivityList, fullList){
         //arsection_meetingdays, arsection_begintime, arsection_endtime
         //arsection_itemtotalprice,arsection_combokey
 
+        $activitySection.text(section.arsection_activitycode['#text'] +"-"+section.arsection_section_sort['#text'])
         $sectionBeginDate.text(section.arsection_begindate['#text']);
         $sectionEndDate.text(section.arsection_enddate['#text']);
         $sectionBeginTime.text(section.arsection_begintime['#text']);
         $sectionEndTime.text(section.arsection_endtime['#text']);
         $sectionMeetingDays.text(section.arsection_meetingdays['#text']);
         $sectionFee.text(section.arsection_itemtotalprice['#text']);
-        $sectionRegistrationLink.text(section.arsection_combokey['#text']);
+        $sectionRegistrationLink.html("<a href=\"https://register.winpark.org/wbwsc/webtrac.wsc/search.html?display=detail&primarycode=" + section.arsection_activitycode['#text'] +"-"+section.arsection_section_sort['#text'] + "\"> Register");
 
-        $row.append($sectionBeginDate, $sectionEndDate, $sectionBeginTime, $sectionEndTime, $sectionMeetingDays,$sectionFee, $sectionRegistrationLink)
-        //console.log(section.arsection_begindate['#text'])
+        $row.append($activitySection, $sectionBeginDate, $sectionEndDate, $sectionBeginTime, $sectionEndTime, $sectionMeetingDays,$sectionFee, $sectionRegistrationLink)
         return($row)
       }));
 
@@ -191,9 +190,9 @@ function sortIntoSections($container, uniqueActivityList, fullList){
     }
   }
 
-  function wordpressCategoryFilter(listToBeFiltered){
-    listToBeFiltered.filter(activity =>{
-      return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
+  function wordpressCategoryFilter(listToBeFiltered, activityCategory){
+    return listToBeFiltered.filter(activity =>{
+      return activity.arsection_category['#text'] === activityCategory
     })
   }
 
@@ -205,11 +204,8 @@ var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.v
 var allActivities = sortStartDates(objson);
 
 //Filters allActivities Down to what is passed on the Window
-var filteredActivities = wordpressCategoryFilter(allActivities);
-//var filteredActivities = allActivities.filter(activity => {
-// return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
-//});
-console.log(filteredActivities)
+var windowActivity = window.__ACTIVITY_FILTER;
+var filteredActivities = wordpressCategoryFilter(allActivities, windowActivity);
 
 //uniqueActivityCodesList returns a list of unique Activity codes
 var uniqueActivityCodesList = uniqueActivityFinder(filteredActivities);
@@ -223,7 +219,6 @@ var uniqueSections = returnUniqueSections(filteredActivities, uniqueSectionList)
 
 
 
-//console.log(filteredActivities);
 
 /*
  <script type="text/javascript">
