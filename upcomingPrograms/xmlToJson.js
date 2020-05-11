@@ -2,7 +2,7 @@
   $(document).ready(function(){
     var $container = $('div#upcoming-activities');
     // something else on load?
-    sortIntoSections($container, uniqueActivityCodesList, filteredActivities);
+    sortIntoSections($container, uniqueActivityCodesList, uniqueSections);
   });
 
 
@@ -147,13 +147,15 @@ for(var i=0; i<uniqueSectionList.length; i++){
 //Return all sections for each activity
 function sortIntoSections($container, uniqueActivityList, fullList){
     $container.empty();
+    console.log(fullList)
+    console.log(uniqueActivityList);
     for(var i=0; i<uniqueActivityList.length; i++){
       const results = fullList.filter(activity => activity.arsection_activitycode['#text'] == uniqueActivityList[i]);
       var $item = $('<div  />');
       var $itemHeader = $('<h2 />');
       var $itemDescription = $('<p />');
       var $table = $('<table class="sections" />')
-
+      console.log(results)
       $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
@@ -189,6 +191,12 @@ function sortIntoSections($container, uniqueActivityList, fullList){
     }
   }
 
+  function wordpressCategoryFilter(listToBeFiltered){
+    listToBeFiltered.filter(activity =>{
+      return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
+    })
+  }
+
 // creates object instantce of XMLtoJSON
 var xml2json = new XMLtoJSON();
 var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.varnerchris.com/wp-content/uploads/ftp/test.xml');
@@ -196,20 +204,26 @@ var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.v
 //allActivities returns ALL programs/sections not started
 var allActivities = sortStartDates(objson);
 
+//Filters allActivities Down to what is passed on the Window
+var filteredActivities = wordpressCategoryFilter(allActivities);
+//var filteredActivities = allActivities.filter(activity => {
+// return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
+//});
+console.log(filteredActivities)
+
 //uniqueActivityCodesList returns a list of unique Activity codes
-var uniqueActivityCodesList = uniqueActivityFinder(allActivities);
+var uniqueActivityCodesList = uniqueActivityFinder(filteredActivities);
 
 //uniqueSectionList returns a list of unique Section Codes
-var uniqueSectionList = uniqueSectionFinder(allActivities);
+var uniqueSectionList = uniqueSectionFinder(filteredActivities);
 
-//uniqueActivities returns just ONE of each Activity/Section
-var uniqueActivities = returnJustOneActivity(allActivities,uniqueActivityCodesList)
+//Returns One Unique Section for each activity
+var uniqueSections = returnUniqueSections(filteredActivities, uniqueSectionList);
 
-var uniqueSections = returnUniqueSections(allActivities, uniqueSectionList)
 
-var filteredActivities = uniqueSections.filter(activity => {
-  return activity.arsection_category['#text'] === window.__ACTIVITY_FILTER
-});
+
+
+//console.log(filteredActivities);
 
 /*
  <script type="text/javascript">
