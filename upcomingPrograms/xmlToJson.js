@@ -155,7 +155,6 @@ function sortIntoSections($container, uniqueActivityList, fullList){
       $itemHeader.text(results[0].aractivity_shortdescription['#text'] );
       $itemDescription.text(results[0].arsection_brochuretext['#text'] );
 
-
       $table.append($tableHead)
       $item.append($itemHeader, $itemDescription, $table )
 
@@ -196,16 +195,27 @@ function sortIntoSections($container, uniqueActivityList, fullList){
     })
   }
 
+  function updatedWordpressCategoryFilter(listToBeFiltered, activityCategory){
+    return listToBeFiltered.filter(activity =>{
+      return activityCategory.includes(activity.arsection_category['#text'])
+    })
+  }
+
+
+
 // creates object instantce of XMLtoJSON
 var xml2json = new XMLtoJSON();
 var objson = xml2json.fromFile('https://cors-anywhere.herokuapp.com/http://www.varnerchris.com/wp-content/uploads/ftp/test.xml');
+
 
 //allActivities returns ALL programs/sections not started
 var allActivities = sortStartDates(objson);
 
 //Filters allActivities Down to what is passed on the Window
+//var filteredActivities = wordpressCategoryFilter(allActivities, windowActivity);
 var windowActivity = window.__ACTIVITY_FILTER;
-var filteredActivities = wordpressCategoryFilter(allActivities, windowActivity);
+var filteredActivities = updatedWordpressCategoryFilter(allActivities, windowActivity);
+
 
 //uniqueActivityCodesList returns a list of unique Activity codes
 var uniqueActivityCodesList = uniqueActivityFinder(filteredActivities);
